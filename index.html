@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pengumuman Kelulusan</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f4f6f9;
+  text-align: center;
+}
+
+.container {
+  padding: 20px;
+}
+
+input {
+  padding: 12px;
+  width: 280px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 12px 20px;
+  background: green;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.hidden { display: none; }
+
+.certificate {
+  width: 95%;
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  border: 5px solid gold;
+  background: white;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header img {
+  width: 80px;
+}
+
+.video-container video {
+  width: 90%;
+  border-radius: 10px;
+}
+
+h2, h3, p {
+  margin: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div id="login">
+  <h2>Pengumuman Kelulusan</h2>
+  <input type="text" id="nomor" placeholder="Masukkan Nomor Peserta">
+  <br><br>
+  <button onclick="cekKelulusan()">Cek Kelulusan</button>
+  <p id="error" style="color:red;" class="hidden">Nomor tidak ditemukan!</p>
+</div>
+
+<!-- VIDEO -->
+<div id="videoPage" class="hidden">
+  <h3>Perjalanan Anda di Sekolah</h3>
+  <div class="video-container">
+    <video id="video" controls autoplay>
+      <source src="video.mp4" type="video/mp4">
+    </video>
+  </div>
+</div>
+
+<!-- HASIL -->
+<div id="hasil" class="hidden">
+  <div class="certificate" id="sertifikat">
+
+    <div class="header">
+      <img src="logo-provinsi.png">
+      <div>
+        <h3>PEMERINTAH PROVINSI MALUKU</h3>
+        <h3>DINAS PENDIDIKAN DAN KEBUDAYAAN</h3>
+        <h2>SMK NEGERI 10 SERAM BAGIAN BARAT</h2>
+      </div>
+      <img src="logo-sekolah.png">
+    </div>
+
+    <hr>
+
+    <h2>SERTIFIKAT KELULUSAN</h2>
+    <h3 style="letter-spacing:2px;">TAHUN PELAJARAN 2025/2026</h3>
+
+    <p>Nama:</p>
+    <h2 id="nama"></h2>
+
+    <p>Nomor Peserta:</p>
+    <h3 id="noPeserta"></h3>
+
+    <p>Konsentrasi Keahlian:</p>
+    <h3 id="jurusan"></h3>
+
+    <h2 style="color:green;">LULUS</h2>
+
+    <br><br>
+
+    <p>Kepala Sekolah</p>
+    <br>
+    <img src="ttd.png" width="150"><br>
+    <b>LENNY. Chr. RISAKOTTA, S.Pd., M.Pd</b><br>
+    NIP: 196703181999032005
+
+  </div>
+
+  <br>
+  <button onclick="downloadPDF()">Download PDF</button>
+</div>
+
+</div>
+
+<!-- LIBRARY PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+
+// DATA SISWA
+const dataSiswa = {
+  "26210801130018": { nama: "Amanda Wuritimur", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130027": { nama: "David L Monaten", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130036": { nama: "Fanasya Picaulima", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130045": { nama: "Gabriella Juen Gracya Thenu", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130054": { nama: "Indri Virgin Ratumarun", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130063": { nama: "Juans Wildhom Kaya", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130072": { nama: "Maria Egi Kolau", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130081": { nama: "Melinda Mandey", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130099": { nama: "Mita Katalane", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130108": { nama: "Silvi Puttilehalat", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130117": { nama: "Velisya Frilly Ganggi", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130126": { nama: "Cindy J Iraratu", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801100135": { nama: "Jen Regin Mananue", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130144": { nama: "Nurlisa Ninilouw", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130153": { nama: "Rindi Ch Akollo", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130162": { nama: "Yulia Mawene", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130171": { nama: "Cintaria Jean Sitania", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130189": { nama: "Heavenly Julianty Kakihary", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130198": { nama: "Mariel Daniello Madabaafu", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130207": { nama: "Rian Grasio Beo", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130216": { nama: "Ryan M Nunuela", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130225": { nama: "Andira Henaulu", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130234": { nama: "Arlin Blenda Ririhena", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130243": { nama: "Avenly Nimsy Elly", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130252": { nama: "Azriel Crisye Lewerissa", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130261": { nama: "Billy Rifly Muskitta", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130279": { nama: "Donrian Kolway", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130288": { nama: "Farlan Niay", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130297": { nama: "Heldi Menda Nuruwe", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130306": { nama: "Mei Grarie Seay", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130315": { nama: "Meilani Birahy", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130324": { nama: "Raditya Maitimu", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130333": { nama: "Risvilga Ralahalu", konsentrasi: "Teknik Komputer dan Jaringan" },
+  "26210801130342": { nama: "Samson Konoralma", konsentrasi: "Teknik Komputer dan Jaringan" }
+};
+
+// CEK KELULUSAN
+function cekKelulusan() {
+  let input = document.getElementById("nomor").value;
+  let nomor = input.replace(/[^0-9]/g, "");
+
+  let siswa = dataSiswa[nomor];
+
+  if (siswa) {
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("videoPage").classList.remove("hidden");
+
+    let video = document.getElementById("video");
+
+    video.onended = function () {
+      document.getElementById("videoPage").classList.add("hidden");
+      document.getElementById("hasil").classList.remove("hidden");
+
+      document.getElementById("nama").innerText = siswa.nama;
+      document.getElementById("noPeserta").innerText = nomor;
+      document.getElementById("jurusan").innerText = siswa.konsentrasi;
+    };
+
+  } else {
+    document.getElementById("error").classList.remove("hidden");
+  }
+}
+
+// DOWNLOAD PDF
+function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+
+  html2canvas(document.getElementById("sertifikat")).then(canvas => {
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("landscape");
+
+    pdf.addImage(imgData, "PNG", 10, 10, 270, 180);
+    pdf.save("Sertifikat.pdf");
+  });
+}
+
+</script>
+
+</body>
+</html>
